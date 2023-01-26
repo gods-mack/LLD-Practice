@@ -1,7 +1,7 @@
 """
 Multi-Level Cache, having support for LRU eviction Algorithm.
 
-Multi-Level Cache's read world application is CPU cache,
+Multi-Level Cache's real-world application is CPU cache,
 for example MacOS has L1, L2 Cache at processor-level
 """
 
