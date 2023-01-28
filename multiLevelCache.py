@@ -1,7 +1,7 @@
 """
 Multi-Level Cache, having support for LRU eviction Algorithm.
 
-Multi-Level Cache's real-world application is CPU cache,
+Multi-Level Cache's read world application is CPU cache,
 for example MacOS has L1, L2 Cache at processor-level
 """
 
@@ -55,7 +55,7 @@ class Cache():
         self.lru_deque = deque([])
     
     def put(self, key, value):
-        if self.storage.get(key)  != None:
+        if  key in self.storage:
             self.update(key, value)
         elif self.current_size < self.capacity:
             self.storage[key] = value
@@ -139,22 +139,18 @@ class MultiLevelCache():
     def level_get(self, key):
         read_start = time.time()
         res = "nil"
-        c1_outp = self.c1.get(key)
-        if c1_outp:
-            res = self.c1.get(key)
-        c2_outp = self.c2.get(key)
-        if c2_outp:
-            res = c2_outp
-            self.c1.put(key, res)        #  make entry in higher layer
-        c3_outp = self.c3.get(key)
-        if c3_outp:
-            res = c3_outp
-            self.c2.put(key, res)
-            self.c1.put(key,res)         # make entry in higher layer    
+        # check for key in all cache levels
+        output = [self.c1.get(key), self.c2.get(key), self.c3.get(key)]
+        if any(output):
+            res = next(val for val in output if val)
+            # put key-value pair in all cache levels in a single line of code
+            for cache in [self.c1, self.c2, self.c3]:
+                cache.put(key, res)
         read_end = time.time()
         time_taken = read_end - read_start
-        self.cache_service.log_time_taken(time_taken, "GET")   
+        self.cache_service.log_time_taken(time_taken, "GET")
         return res, time_taken
+
 
     
     def print_caches_stats(self):
