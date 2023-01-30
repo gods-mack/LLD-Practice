@@ -25,16 +25,12 @@ class CacheService():
             self.write_time_logs.append(time_taken)
 
     def avg_time_stats(self, operation):
-        if operation == "GET":
-            try:
-                return sum(self.read_time_logs) / len(self.read_time_logs)
-            except:
-                return 0
-        if operation == "PUT":
-            try:
-                return sum(self.write_time_logs) / len(self.write_time_logs)
-            except:
-                return 0
+        logs = self.read_time_logs if operation == "GET" else self.write_time_logs
+        try:
+            return sum(logs) / len(logs)
+        except ZeroDivisionError:
+            return 0
+
 
     def cache_stats(self):
         avg_write = self.avg_time_stats("PUT")
